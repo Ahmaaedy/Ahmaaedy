@@ -278,7 +278,7 @@ def main():
     ap.add_argument("--out", default=os.environ.get("OUT_DIR", "."))
     args = ap.parse_args()
 
-    login = os.environ.get("GH_USER", "your-username")
+    login = os.environ.get("GH_USER", "Ahmaaedy")
     if args.demo:
         user = demo_data()
     else:
