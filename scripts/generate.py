@@ -281,7 +281,7 @@ def main():
     if args.demo:
         user = demo_data()
     else:
-        token = os.environ.get("GH_TOKEN")
+        token = (os.environ.get("GH_TOKEN") or "").strip()
         if not token:
             raise SystemExit("Set GH_TOKEN (a token with read:user) or use --demo.")
         user = fetch(login, token)
