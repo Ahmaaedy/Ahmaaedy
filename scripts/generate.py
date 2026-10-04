@@ -15,8 +15,7 @@ import datetime as dt
 import os
 import random
 from html import escape
-from dotenv import load_dotenv
-load_dotenv()
+
 
 # Rosé Pine palette, a staple of the ricing scene.
 C = {
