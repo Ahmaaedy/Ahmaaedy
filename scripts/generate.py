@@ -15,8 +15,9 @@ import datetime as dt
 import os
 import random
 from html import escape
+token = "".join((os.environ.get("GH_TOKEN") or "").split())
+print("token length:", len(token))
 print("debug")
-
 # Rosé Pine palette, a staple of the ricing scene.
 C = {
     "base": "#191724",
