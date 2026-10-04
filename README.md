@@ -2,7 +2,7 @@
 
 <h1>Ahmad El Yakubu</h1>
 
-<img src="./stats.svg" width="620" alt="Contributions in the last year"/>
+<img src="./typing.svg" width="620" alt="Contributions in the last year"/>
 
 [linkedin](https://www.linkedin.com/in/ahmaedy/) &nbsp;·&nbsp;
 [x](https://x.com/ElyakubuAhmad) &nbsp;·&nbsp;
