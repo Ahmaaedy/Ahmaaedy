@@ -66,7 +66,7 @@ picks the best takes, and cuts stutters and repeats.
 
 <img src="./streak.svg" width="620" alt="Current and longest streak"/>
 
-<img src="./langs.svg" width="620" alt="Top languages by bytes"/>
+<img src="./langs.svg" width="620" alt="Top languages by bytes and by repos"/>
 
 <img src="./year.svg" width="620" alt="The last year, one character per day"/>
 
@@ -82,7 +82,15 @@ GraphQL API, once a day, committing only what changed.
 
 They animate with SMIL inside the SVG, because GitHub strips scripts from<br>
 READMEs, and since nothing loads from a third party, nothing here can<br>
-rate-limit or go dark.
+rate-limit or go dark. The headings are SVGs for the same reason: GitHub<br>
+also strips CSS, so an image is the only way to put this page's own<br>
+typeface on them.
+
+The typeface is [JetBrains Mono](https://www.jetbrains.com/lp/mono/), subset<br>
+to just the characters each graphic draws and inlined as base64. That isn't<br>
+only for looks: the year grid assumes an advance width of exactly 0.600 em,<br>
+and a viewer whose default monospace is narrower would otherwise see it<br>
+squeezed.
 
 Language totals cover public repositories only. `year.svg` draws one<br>
-character per day: `.` `:` `+` `#` `@`, quiet to loud.
+character per day: `:` `+` `#` `@`, quiet to loud.
