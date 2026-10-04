@@ -15,7 +15,7 @@ import datetime as dt
 import os
 import random
 from html import escape
-
+print("debug")
 
 # Rosé Pine palette, a staple of the ricing scene.
 C = {
