@@ -7,7 +7,8 @@ Preview with fake data, no network:
     python scripts/generate.py --demo --out preview
 Add --static to drop all animation (handy for rasterising a preview).
 
-Writes stats.svg, streak.svg, langs.svg and year.svg into the output dir.
+Writes stats, streak, langs and year SVGs plus five hd-*.svg section headings
+into the output dir.
 Output contains no timestamps, so a daily run only commits when data changes.
 """
 import argparse
@@ -15,9 +16,7 @@ import datetime as dt
 import os
 import random
 from html import escape
-token = "".join((os.environ.get("GH_TOKEN") or "").split())
-print("token length:", len(token))
-print("debug")
+
 # Rosé Pine palette, a staple of the ricing scene.
 C = {
     "base": "#191724",
@@ -190,7 +189,7 @@ def stats_svg(login, user, animate):
         ("repos committed to", cc["totalRepositoriesWithContributedCommits"], None),
         ("followers", user["followers"]["totalCount"], None),
     ]
-    w, h = 495, 62 + 24 * len(rows) - 6
+    w, h = 620, 62 + 24 * len(rows) - 6
     body = "".join(row(62 + 24 * i, k, f"{v:,}" if isinstance(v, int) else v, w, f)
                    for i, (k, v, f) in enumerate(rows))
     return card(login, w, h, "stats --year", body, animate)
@@ -203,26 +202,26 @@ def streak_svg(login, days, animate):
     items = [("current", cur, f"{cur} days", C["foam"], cur / top),
              ("longest", longest, f"{longest} days", C["iris"], 1.0),
              ("active days", active, f"{active} of {len(days)}", C["gold"], active / max(len(days), 1))]
-    w, h = 495, 62 + 28 * len(items) - 10
+    w, h = 620, 62 + 28 * len(items) - 10
     body = ""
     for i, (k, _, label, fill, ratio) in enumerate(items):
         y = 62 + 28 * i
         body += (f'<text x="20" y="{y}" fill="{C["muted"]}">{k}</text>'
-                 f'<rect x="140" y="{y-7}" width="220" height="8" rx="2" fill="{C["overlay"]}"/>'
-                 + bar(140, y, 220 * ratio, fill, animate)
+                 f'<rect x="140" y="{y-7}" width="340" height="8" rx="2" fill="{C["overlay"]}"/>'
+                 + bar(140, y, 340 * ratio, fill, animate)
                  + f'<text x="{w-20}" y="{y}" fill="{C["text"]}" text-anchor="end">{escape(label)}</text>')
     return card(login, w, h, "streak", body, animate)
 
 
 def langs_svg(login, langs, animate):
-    w, h = 495, 62 + 26 * max(len(langs), 1) - 8
+    w, h = 620, 62 + 26 * max(len(langs), 1) - 8
     body = ""
     top = langs[0][1] if langs else 1
     for i, (name, pct, color) in enumerate(langs):
         y = 62 + 26 * i
         body += (f'<text x="20" y="{y}" fill="{C["text"]}">{escape(name)}</text>'
-                 f'<rect x="140" y="{y-7}" width="260" height="8" rx="2" fill="{C["overlay"]}"/>'
-                 + bar(140, y, 260 * pct / top, color, animate)
+                 f'<rect x="140" y="{y-7}" width="340" height="8" rx="2" fill="{C["overlay"]}"/>'
+                 + bar(140, y, 340 * pct / top, color, animate)
                  + f'<text x="{w-20}" y="{y}" fill="{C["muted"]}" text-anchor="end">{pct:.1f}%</text>')
     if not langs:
         body = f'<text x="20" y="62" fill="{C["muted"]}">no public repos yet</text>'
@@ -248,8 +247,9 @@ def year_svg(login, days, animate):
         r = (d.weekday() + 1) % 7  # Sunday on top
         cols.setdefault(col, {})[r] = c
     ncols = max(cols) + 1
-    cw, rh = 10, 14
-    w, h = 40 + ncols * cw, 54 + 7 * rh + 34
+    w = 620
+    cw, rh = (w - 40) / ncols, 14
+    h = 54 + 7 * rh + 34
     body = ""
     for col in range(ncols):
         cells = ""
@@ -270,6 +270,17 @@ def year_svg(login, days, animate):
     return card(login, w, h, "year", body + legend, animate)
 
 
+def heading_svg(login, cmd):
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="620" height="44" viewBox="0 0 620 44" '
+        f'role="img" aria-label="{escape(cmd)}">\n'
+        f'<rect width="620" height="44" rx="8" fill="{C["base"]}"/>\n'
+        f'<rect x="0.5" y="0.5" width="619" height="43" rx="7.5" fill="none" stroke="{C["overlay"]}"/>\n'
+        f'<text x="20" y="27" font-family="{FONT}" font-size="{FS}" fill="{C["muted"]}">{escape(login)}@arch '
+        f'<tspan fill="{C["foam"]}">~</tspan> $ <tspan fill="{C["text"]}">{escape(cmd)}</tspan></text>\n</svg>\n'
+    )
+
+
 # ---------------------------------------------------------------- main ----
 def main():
     ap = argparse.ArgumentParser()
@@ -278,11 +289,11 @@ def main():
     ap.add_argument("--out", default=os.environ.get("OUT_DIR", "."))
     args = ap.parse_args()
 
-    login = os.environ.get("GH_USER", "Ahmaaedy")
+    login = os.environ.get("GH_USER", "your-username")
     if args.demo:
         user = demo_data()
     else:
-        token = (os.environ.get("GH_TOKEN") or "").strip()
+        token = "".join((os.environ.get("GH_TOKEN") or "").split())
         if not token:
             raise SystemExit("Set GH_TOKEN (a token with read:user) or use --demo.")
         user = fetch(login, token)
@@ -294,6 +305,11 @@ def main():
         "streak.svg": streak_svg(login, days, animate),
         "langs.svg": langs_svg(login, language_totals(user), animate),
         "year.svg": year_svg(login, days, animate),
+        "hd-about.svg": heading_svg(login, "cat about"),
+        "hd-stack.svg": heading_svg(login, "ls stack"),
+        "hd-projects.svg": heading_svg(login, "ls projects"),
+        "hd-stats.svg": heading_svg(login, "stats"),
+        "hd-about-this-page.svg": heading_svg(login, "man this-page"),
     }
     os.makedirs(args.out, exist_ok=True)
     for name, svg in files.items():
