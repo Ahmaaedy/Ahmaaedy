@@ -2,7 +2,7 @@
 
 <img src="./typing.svg" width="620" alt="typing"/>
 
-<h1>Ahmad El Yakubu</h1>
+<h1>Ahmad El-Yakubu</h1>
 
 <img src="./stats.svg" width="620" alt="Contributions in the last year"/>
 
